@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Altimeter Göstergesi</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0f172a;
+            font-family: 'Segoe UI', sans-serif;
+            flex-direction: column;
+        }
+
+        .gauge-container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            background-color: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .label-container {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 18px;
+            color: #00d9ff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="gauge-container">
+        <canvas id="altimeterCanvas" width="300" height="300"></canvas>
+    </div>
+    <div class="label-container">
+        <div>Altitude: <span id="altitudeValue">0 ft</span></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('altimeterCanvas');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 30;
+
+        let currentAltitude = 0;
+
+        function drawAltimeter() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dış çember
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // İç çember (arka plan)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius - 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#1e293b';
+            ctx.fill();
+
+            // Rakamlar ve çizgiler
+            ctx.fillStyle = '#00d9ff';
+            ctx.strokeStyle = '#00d9ff';
+            ctx.font = '14px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // 0-10000 feet arası işaretler (1000'er birim)
+            for (let i = 0; i <= 10; i++) {
+                const angle = (i * 36 - 90) * Math.PI / 180; // 36° aralıklarla
+                const altitude = i * 1000;
+
+                // Büyük çizgiler
+                const innerRadius = radius - 20;
+                const outerRadius = radius - 5;
+
+                const x1 = centerX + innerRadius * Math.cos(angle);
+                const y1 = centerY + innerRadius * Math.sin(angle);
+                const x2 = centerX + outerRadius * Math.cos(angle);
+                const y2 = centerY + outerRadius * Math.sin(angle);
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Rakamlar
+                const textRadius = radius - 35;
+                const textX = centerX + textRadius * Math.cos(angle);
+                const textY = centerY + textRadius * Math.sin(angle);
+
+                ctx.fillText((altitude / 1000).toString(), textX, textY);
+            }
+
+            // Küçük işaretler (500 feet aralıklarla)
+            for (let i = 0; i < 20; i++) {
+                if (i % 2 !== 0) { // Sadece ara değerler
+                    const angle = (i * 18 - 90) * Math.PI / 180;
+
+                    const innerRadius = radius - 15;
+                    const outerRadius = radius - 5;
+
+                    const x1 = centerX + innerRadius * Math.cos(angle);
+                    const y1 = centerY + innerRadius * Math.sin(angle);
+                    const x2 = centerX + outerRadius * Math.cos(angle);
+                    const y2 = centerY + outerRadius * Math.sin(angle);
+
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            // İbre
+            const needleAngle = ((currentAltitude / 1000) * 36 - 90) * Math.PI / 180;
+            const needleLength = radius - 40;
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + needleLength * Math.cos(needleAngle),
+                centerY + needleLength * Math.sin(needleAngle)
+            );
+            ctx.strokeStyle = '#ff6b6b';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Merkez nokta
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Title
+            ctx.fillStyle = '#00d9ff';
+            ctx.font = '12px Segoe UI';
+            ctx.fillText('ALTITUDE', centerX, centerY + 60);
+            ctx.fillText('x 1000 FT', centerX, centerY + 75);
+        }
+
+        function updateAltimeter(altitude) {
+            console.log('Altimeter güncelleniyor:', altitude);
+            currentAltitude = Math.max(0, Math.min(altitude, 10000)); // 0-10000 feet sınırla
+
+            document.getElementById('altitudeValue').textContent = `${Math.round(currentAltitude)} ft`;
+
+            drawAltimeter();
+        }
+
+        // İlk çizim
+        drawAltimeter();
+
+        // Test için
+        // setInterval(() => updateAltimeter(Math.random() * 10000), 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Mavi Hız Göstergesi</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #00bfff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .speed-container {
+            position: relative;
+            width: 240px;
+            height: 240px;
+        }
+
+        .speed-gauge {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from -150deg,
+                #004080 0deg 60deg,
+                #007acc 60deg 120deg,
+                #00bfff 120deg 180deg,
+                #00ffff 180deg 240deg,
+                #66ffff 240deg 300deg,
+                #cccccc 300deg 360deg
+            );
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 191, 255, 0.3);
+        }
+
+        .speed-gauge::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #0d1117 0%, #1f2a38 100%);
+            z-index: 1;
+        }
+
+        .speed-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+        }
+
+        .speed-label {
+            font-size: 12px;
+            color: #66ccff;
+        }
+
+        .speed-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00bfff;
+            text-shadow: 0 0 15px rgba(0, 191, 255, 0.9);
+        }
+
+        .speed-unit {
+            font-size: 14px;
+            color: #66ccff;
+        }
+
+        .speed-needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 80px;
+            background: linear-gradient(to top, #00ffff, #004080);
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5;
+            border-radius: 1px;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+            transition: transform 0.3s ease;
+        }
+
+        .speed-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 14px;
+            height: 14px;
+            background-color: #00ffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 15;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+        }
+
+        .speed-marks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .speed-mark {
+            position: absolute;
+            width: 2px;
+            height: 12px;
+            background: #00bfff;
+            transform-origin: center bottom;
+        }
+
+        .speed-mark.major {
+            height: 18px;
+            background: #ffffff;
+        }
+
+        .speed-text {
+            position: absolute;
+            color: #00ccff;
+            font-size: 11px;
+            font-weight: bold;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="speed-container">
+        <div class="speed-gauge">
+            <div class="speed-marks" id="speedMarks"></div>
+        </div>
+        <div class="speed-needle" id="speedNeedle"></div>
+        <div class="speed-center"></div>
+        <div class="speed-display">
+            <div class="speed-label">HIZ</div>
+            <div class="speed-value" id="speedValue">0.0</div>
+            <div class="speed-unit">m/s</div>
+        </div>
+    </div>
+
+    <script>
+        function createSpeedMarks() {
+            const marksContainer = document.getElementById('speedMarks');
+            const maxSpeed = 60;
+            const totalMarks = 30;
+
+            for (let i = 0; i <= totalMarks; i++) {
+                const mark = document.createElement('div');
+                mark.className = 'speed-mark';
+
+                const angle = (i / totalMarks) * 300 - 150;
+                const speed = (i / totalMarks) * maxSpeed;
+
+                if (i % 5 === 0) {
+                    mark.className += ' major';
+
+                    const text = document.createElement('div');
+                    text.className = 'speed-text';
+                    text.textContent = Math.round(speed);
+
+                    const textRadius = 85;
+                    const rad = angle * Math.PI / 180;
+                    text.style.left = (120 + textRadius * Math.sin(rad)) + 'px';
+                    text.style.top = (120 - textRadius * Math.cos(rad)) + 'px';
+                    marksContainer.appendChild(text);
+                }
+
+                const radius = 100;
+                const rad = angle * Math.PI / 180;
+                mark.style.left = (120 + radius * Math.sin(rad)) + 'px';
+                mark.style.top = (120 - radius * Math.cos(rad) - 10) + 'px';
+                mark.style.transform = `rotate(${angle}deg)`;
+                marksContainer.appendChild(mark);
+            }
+        }
+
+        function updateSpeed(speed) {
+            const speedValue = document.getElementById('speedValue');
+            const speedNeedle = document.getElementById('speedNeedle');
+            speedValue.textContent = speed.toFixed(1);
+
+            const maxSpeed = 60;
+            const clamped = Math.max(0, Math.min(speed, maxSpeed));
+            const angle = (clamped / maxSpeed) * 300 - 150;
+            speedNeedle.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+        }
+
+        window.addEventListener('load', () => {
+            createSpeedMarks();
+            updateSpeed(0);
+        });
+    </script>
+</body>
+</html>

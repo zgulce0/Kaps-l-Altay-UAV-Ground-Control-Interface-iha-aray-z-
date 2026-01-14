@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Mavi Eğim Göstergesi</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0f172a;
+            font-family: 'Segoe UI', sans-serif;
+            flex-direction: column;
+        }
+
+        .gauge-container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            background-color: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .label-container {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            font-size: 15px;
+            color: #00d9ff;
+            font-weight: bold;
+        }
+
+        .label {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="gauge-container">
+        <canvas id="attitudeCanvas" width="300" height="300"></canvas>
+    </div>
+    <div class="label-container">
+        <div class="label">P: <span id="pitchValue">0.0°</span></div>
+        <div class="label">R: <span id="rollValue">0.0°</span></div>
+        <div class="label">Y: <span id="yawValue">0.0°</span></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('attitudeCanvas');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 20;
+
+        let currentPitch = 0;
+        let currentRoll = 0;
+        let currentYaw = 0;
+
+        const PITCH_SCALE_PX_PER_DEGREE = 2.5;
+
+        function drawGauge() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(currentRoll * Math.PI / 180);
+            ctx.translate(0, currentPitch * PITCH_SCALE_PX_PER_DEGREE);
+
+            ctx.beginPath();
+            ctx.rect(-centerX, -centerY * 2, canvas.width, centerY * 4);
+            ctx.clip();
+
+            ctx.fillStyle = '#0284c7'; // Gökyüzü rengi (mavi)
+            ctx.fillRect(-centerX, -centerY * 2, canvas.width, centerY * 2);
+
+            ctx.fillStyle = '#334155'; // Zemin rengi (lacivertimsi)
+            ctx.fillRect(-centerX, 0, canvas.width, centerY * 2);
+
+            // Ufuk çizgisi
+            ctx.beginPath();
+            ctx.strokeStyle = '#00d9ff';
+            ctx.lineWidth = 2;
+            ctx.moveTo(-radius * 2, 0);
+            ctx.lineTo(radius * 2, 0);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#99f6e4';
+            ctx.fillStyle = '#99f6e4';
+            ctx.lineWidth = 1;
+            ctx.font = '10px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let i = -90; i <= 90; i += 5) {
+                const y = i * PITCH_SCALE_PX_PER_DEGREE;
+                if (i % 10 === 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(-25, y);
+                    ctx.lineTo(25, y);
+                    ctx.stroke();
+                    ctx.fillText(Math.abs(i).toString(), 40, y);
+                    if (i !== 0) ctx.fillText(Math.abs(i).toString(), -40, y);
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(-10, y);
+                    ctx.lineTo(10, y);
+                    ctx.stroke();
+                }
+            }
+
+            ctx.restore();
+            ctx.save();
+            ctx.translate(centerX, centerY);
+
+            // Roll mark çizgileri (yarım daire üstte)
+            ctx.beginPath();
+            ctx.arc(0, 0, radius + 5, Math.PI, 0);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = '10px Segoe UI';
+            ctx.textBaseline = 'middle';
+
+            const bankDegrees = [-60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60];
+            bankDegrees.forEach(deg => {
+                const angleRad = (90 - deg) * Math.PI / 180;
+                const x = (radius + 10) * Math.cos(angleRad);
+                const y = -(radius + 10) * Math.sin(angleRad);
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(angleRad + Math.PI / 2);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                if (deg === 0) {
+                    ctx.lineTo(0, -15);
+                } else if (Math.abs(deg) % 30 === 0) {
+                    ctx.lineTo(0, -10);
+                    ctx.fillText(Math.abs(deg).toString(), 0, -20);
+                } else {
+                    ctx.lineTo(0, -5);
+                }
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // Kanat simgeleri
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 2;
+            ctx.fillStyle = '#00f0ff';
+
+            ctx.beginPath();
+            ctx.moveTo(-radius * 0.4, 0);
+            ctx.lineTo(-radius * 0.1, 0);
+            ctx.moveTo(-radius * 0.3, 0);
+            ctx.lineTo(-radius * 0.4, -radius * 0.05);
+            ctx.lineTo(-radius * 0.4, radius * 0.05);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(radius * 0.4, 0);
+            ctx.lineTo(radius * 0.1, 0);
+            ctx.moveTo(radius * 0.3, 0);
+            ctx.lineTo(radius * 0.4, -radius * 0.05);
+            ctx.lineTo(radius * 0.4, radius * 0.05);
+            ctx.stroke();
+
+            // Merkez çizgi ve nokta
+            ctx.beginPath();
+            ctx.moveTo(-5, 0);
+            ctx.lineTo(5, 0);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(0, 0, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function updateAttitude(pitch, roll, yaw) {
+    currentPitch = Math.max(-90, Math.min(90, -pitch));  // <-- işaret değişti
+    currentRoll = Math.max(-180, Math.min(180, -roll));  // <-- işaret değişti
+    currentYaw = yaw;
+
+    document.getElementById('pitchValue').textContent = `${currentPitch.toFixed(1)}°`;
+    document.getElementById('rollValue').textContent = `${currentRoll.toFixed(1)}°`;
+    document.getElementById('yawValue').textContent = `${currentYaw.toFixed(1)}°`;
+
+    drawGauge();
+}
+
+
+        drawGauge();
+        // test için hareket simülasyonu yapılabilir
+        // setInterval(() => updateAttitude(Math.random()*60 - 30, Math.random()*100 - 50, Math.random()*360), 500);
+    </script>
+</body>
+</html>

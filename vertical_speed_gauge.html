@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yuvarlak Dikey Hız Göstergesi</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 5px;
+      background: radial-gradient(ellipse at center, #1a2a3a 0%, #0b1420 70%, #000810 100%);
+      font-family: 'Orbitron', 'Segoe UI', monospace;
+      color: #00d4ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .vsi-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, #1e3a52 0%, #0f1f2e 70%, #0a1520 100%);
+      border: 2px solid #4a90b8;
+      border-radius: 50%;
+      box-shadow:
+        0 0 15px #4a90b844,
+        inset 0 2px 10px rgba(74, 144, 184, 0.05),
+        inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+    }
+
+    .vsi-container::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: conic-gradient(from 0deg, #4a90b8, #3a7099, #4a90b8, #3a7099, #4a90b8);
+      border-radius: 50%;
+      z-index: -1;
+      animation: borderRotate 4s linear infinite;
+    }
+
+    @keyframes borderRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .vsi-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background:
+        conic-gradient(from 0deg,
+          rgba(74, 144, 184, 0.05) 0deg,
+          rgba(74, 144, 184, 0.02) 90deg,
+          rgba(255, 255, 255, 0.01) 180deg,
+          rgba(74, 144, 184, 0.02) 270deg,
+          rgba(74, 144, 184, 0.05) 360deg);
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .vsi-scale {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .vsi-mark {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: center;
+      width: 2px;
+      height: 15px;
+      background: linear-gradient(180deg, transparent 0%, #6ba8d0 40%, #5a98c2 100%);
+      border-radius: 2px;
+      box-shadow: 0 0 2px #6ba8d044;
+    }
+
+    .vsi-mark.major {
+      height: 20px;
+      width: 3px;
+      background: linear-gradient(180deg, transparent 0%, #88bfdd 30%, #6ba8d0 100%);
+      box-shadow: 0 0 4px #6ba8d066;
+    }
+
+    .vsi-mark.minor {
+      height: 12px;
+      opacity: 0.7;
+    }
+
+    .vsi-number {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: center;
+      font-size: 11px;
+      color: #7fb5d9;
+      font-weight: 600;
+      user-select: none;
+      text-shadow: 0 0 3px #6ba8d0;
+      letter-spacing: 0.5px;
+      text-align: center;
+      width: 20px;
+      margin-left: -10px;
+    }
+
+    .vsi-center-circle {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle, #cc6a00, #b85a00);
+      border: 2px solid #e6a044;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      box-shadow:
+        0 0 8px #cc6a0066,
+        inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+    }
+
+    .vsi-needle {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 3px;
+      height: 70px;
+      background: linear-gradient(180deg, #cc4444 0%, #dd5555 50%, #b83d3d 100%);
+      transform: translate(-50%, -50%) rotate(0deg);
+      transform-origin: center bottom;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px 2px 0 0;
+      box-shadow:
+        0 0 6px #cc444466,
+        inset 1px 0 1px rgba(255, 255, 255, 0.2);
+      z-index: 3;
+      margin-top: -35px;
+    }
+
+    .vsi-needle::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -3px;
+      width: 0;
+      height: 0;
+      border-left: 4.5px solid transparent;
+      border-right: 4.5px solid transparent;
+      border-bottom: 8px solid #bb3333;
+      filter: drop-shadow(0 0 2px #cc4444);
+    }
+
+    .vsi-display {
+      position: absolute;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 14px;
+      color: #7fb5d9;
+      user-select: none;
+      background: rgba(74, 144, 184, 0.05);
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 1px solid #6ba8d033;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 0 10px #6ba8d022;
+    }
+
+    .vsi-units {
+      font-size: 10px;
+      color: #88ccff;
+      user-select: none;
+      margin-top: 3px;
+      opacity: 0.8;
+    }
+
+    .vsi-updown {
+      position: absolute;
+      font-size: 9px;
+      font-weight: 700;
+      user-select: none;
+      letter-spacing: 1px;
+      text-shadow: 0 0 6px currentColor;
+      background: rgba(0, 212, 255, 0.1);
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+    }
+
+    .vsi-updown.up {
+      top: 15px;
+      right: 20px;
+      color: #00ff88;
+      text-shadow: 0 0 8px #00ff88;
+      border-color: rgba(0, 255, 136, 0.3);
+      background: rgba(0, 255, 136, 0.1);
+    }
+
+    .vsi-updown.down {
+      bottom: 15px;
+      right: 20px;
+      color: #ff6b00;
+      text-shadow: 0 0 8px #ff6b00;
+      border-color: rgba(255, 107, 0, 0.3);
+      background: rgba(255, 107, 0, 0.1);
+    }
+
+    .vsi-title {
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #6ba8d0;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-shadow: 0 0 4px #6ba8d0;
+      user-select: none;
+    }
+
+    .vsi-center-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      color: #6ba8d0;
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.2;
+      pointer-events: none;
+      z-index: 2;
+      text-shadow: 0 0 4px #4a90b8;
+    }
+
+    .vsi-mark.major {
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .vsi-container:hover {
+      transform: scale(1.05);
+      transition: transform 0.3s ease;
+    }
+
+    .vsi-container:hover .vsi-needle {
+      box-shadow:
+        0 0 12px #cc444488,
+        inset 1px 0 1px rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="vsi-container">
+    <div class="vsi-title">VERTICAL SPEED</div>
+    <div class="vsi-background"></div>
+    <div class="vsi-scale" id="vsiScale"></div>
+    <div class="vsi-center-circle"></div>
+    <div class="vsi-needle" id="vsiNeedle"></div>
+    <div class="vsi-center-label">Vertical<br>Speed</div>
+    <div class="vsi-updown up">UP</div>
+    <div class="vsi-updown down">DN</div>
+    <div class="vsi-display">
+      <div>VS: <span id="vsiValue">0.0</span></div>
+      <div class="vsi-units">m/s</div>
+    </div>
+  </div>
+
+  <script>
+    const maxVerticalSpeed = 10;
+
+    function initVSI() {
+      const vsiScale = document.getElementById('vsiScale');
+
+      for (let i = -maxVerticalSpeed; i <= maxVerticalSpeed; i++) {
+        if (i === 0) continue;
+
+        const mark = document.createElement('div');
+        mark.className = (i % 2 === 0) ? 'vsi-mark major' : 'vsi-mark minor';
+
+        const angle = (i / maxVerticalSpeed) * 135;
+        mark.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+
+        vsiScale.appendChild(mark);
+
+        if (i % 2 === 0) {
+          const number = document.createElement('div');
+          number.className = 'vsi-number';
+
+          const radius = 60;
+          const radians = (angle * Math.PI) / 180;
+          const x = Math.sin(radians) * radius;
+          const y = -Math.cos(radians) * radius;
+
+          number.style.transform = `translate(${x}px, ${y}px)`;
+          number.textContent = Math.abs(i);
+          vsiScale.appendChild(number);
+        }
+      }
+    }
+
+    function updateVerticalSpeed(vs) {
+      const clampedVS = Math.max(-maxVerticalSpeed, Math.min(maxVerticalSpeed, vs));
+      const needleAngle = (clampedVS / maxVerticalSpeed) * 135;
+
+      const needle = document.getElementById('vsiNeedle');
+      needle.style.transform = `translate(-50%, -50%) rotate(${needleAngle}deg)`;
+
+      const vsiValue = document.getElementById('vsiValue');
+      vsiValue.textContent = vs.toFixed(1);
+    }
+
+    initVSI();
+  </script>
+</body>
+</html>

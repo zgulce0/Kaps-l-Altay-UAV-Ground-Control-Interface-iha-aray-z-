@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_47a5a613771bcad484aafa439d0543fe {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_47a5a613771bcad484aafa439d0543fe" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_47a5a613771bcad484aafa439d0543fe = L.map(
+                "map_47a5a613771bcad484aafa439d0543fe",
+                {
+                    center: [39.925533, 32.866287],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 14,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_82b939c91b4da26d9ad8adbde516672d = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_82b939c91b4da26d9ad8adbde516672d.addTo(map_47a5a613771bcad484aafa439d0543fe);
+        
+    
+            var marker_3cf093a4f2c3449260b4de28b16e82b7 = L.marker(
+                [39.925533, 32.866287],
+                {"name": "drone_marker"}
+            ).addTo(map_47a5a613771bcad484aafa439d0543fe);
+        
+    
+            var icon_dda98c0e75e407c421485bd5bcf37679 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plane", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_3cf093a4f2c3449260b4de28b16e82b7.setIcon(icon_dda98c0e75e407c421485bd5bcf37679);
+        
+    
+        var popup_0106125d03851e875d1028f4b5b92fed = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_626a27ab0e98548398fd16c360b5a13e = $(`<div id="html_626a27ab0e98548398fd16c360b5a13e" style="width: 100.0%; height: 100.0%;">Kapsül Altay</div>`)[0];
+                popup_0106125d03851e875d1028f4b5b92fed.setContent(html_626a27ab0e98548398fd16c360b5a13e);
+            
+        
+
+        marker_3cf093a4f2c3449260b4de28b16e82b7.bindPopup(popup_0106125d03851e875d1028f4b5b92fed)
+        ;
+
+        
+    
+    
+            var marker_a9af9dbe31c1e8bbea3fc3475128e489 = L.marker(
+                [39.925533, 32.866287],
+                {}
+            ).addTo(map_47a5a613771bcad484aafa439d0543fe);
+        
+    
+            var icon_1ce30a554c4c9cb01d357ca8cbb3efa1 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "home", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_a9af9dbe31c1e8bbea3fc3475128e489.setIcon(icon_1ce30a554c4c9cb01d357ca8cbb3efa1);
+        
+    
+        var popup_23e16c639cfa62874da551c4bec259e7 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_e091991efef86a20d0329c111a39ac03 = $(`<div id="html_e091991efef86a20d0329c111a39ac03" style="width: 100.0%; height: 100.0%;">Ana Üs</div>`)[0];
+                popup_23e16c639cfa62874da551c4bec259e7.setContent(html_e091991efef86a20d0329c111a39ac03);
+            
+        
+
+        marker_a9af9dbe31c1e8bbea3fc3475128e489.bindPopup(popup_23e16c639cfa62874da551c4bec259e7)
+        ;
+
+        
+    
+    
+            var marker_f231b53b64950f58bcc32cdf35722b4f = L.marker(
+                [39.935533, 32.876287],
+                {"name": "target_marker"}
+            ).addTo(map_47a5a613771bcad484aafa439d0543fe);
+        
+    
+            var icon_0f7e7f1cd379b058a5001da75b9b3570 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "flag", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_f231b53b64950f58bcc32cdf35722b4f.setIcon(icon_0f7e7f1cd379b058a5001da75b9b3570);
+        
+    
+        var popup_466563919c172ccfc7a8282c0564eef5 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_53aac318df6c44c7ceafa0e30036b16b = $(`<div id="html_53aac318df6c44c7ceafa0e30036b16b" style="width: 100.0%; height: 100.0%;">Hedef Konum</div>`)[0];
+                popup_466563919c172ccfc7a8282c0564eef5.setContent(html_53aac318df6c44c7ceafa0e30036b16b);
+            
+        
+
+        marker_f231b53b64950f58bcc32cdf35722b4f.bindPopup(popup_466563919c172ccfc7a8282c0564eef5)
+        ;
+
+        
+    
+    
+            var poly_line_f7e13c008e09c91a5039571101fdd969 = L.polyline(
+                [[39.925533, 32.866287], [39.935533, 32.876287]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_47a5a613771bcad484aafa439d0543fe);
+        
+    
+            var circle_bbd1d9bdc6c87f41dd73085c852a1d69 = L.circle(
+                [39.925533, 32.866287],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 500, "stroke": true, "weight": 3}
+            ).addTo(map_47a5a613771bcad484aafa439d0543fe);
+        
+</script>
+</html>

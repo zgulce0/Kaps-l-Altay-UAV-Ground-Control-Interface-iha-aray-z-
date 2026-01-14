@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pusula Göstergesi (Sade Mavi)</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0b1a2b;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #a0d8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .compass-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      user-select: none;
+    }
+
+    .compass-outer {
+      width: 100%;
+      height: 100%;
+      border: 3px solid #4da6ff;
+      border-radius: 50%;
+      background: radial-gradient(circle, #12365a 0%, #0b1a2b 100%);
+      box-shadow: 0 0 15px #4da6ff66, inset 0 0 20px #4da6ff33;
+      position: relative;
+    }
+
+    .compass-face {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      transform-origin: center;
+      transition: transform 0.3s ease;
+      z-index: 2;
+    }
+
+    .compass-mark {
+      position: absolute;
+      width: 2px;
+      height: 20px;
+      background: #80bfff;
+      left: 50%;
+      top: 10px;
+      transform-origin: bottom center;
+      transform: translateX(-50%);
+      border-radius: 1px;
+    }
+
+    .compass-mark.major {
+      width: 3px;
+      height: 28px;
+      background: #d0e7ff;
+    }
+
+    .compass-number {
+      position: absolute;
+      font-size: 14px;
+      font-weight: 600;
+      color: #a0d8ff;
+      transform: translate(-50%, -50%);
+      user-select: none;
+      text-shadow: 0 0 4px #002a55aa;
+    }
+
+    .compass-letter {
+      position: absolute;
+      font-size: 18px;
+      font-weight: 700;
+      color: #d0e7ff;
+      user-select: none;
+      text-shadow: 0 0 6px #004080bb;
+      transform: translate(-50%, -50%);
+    }
+
+    .compass-needle {
+      position: absolute;
+      width: 6px;
+      height: 80px;
+      background: linear-gradient(to bottom, #4da6ff 0%, #1e3a6a 100%);
+      left: 50%;
+      top: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      transform-origin: center bottom;
+      transition: transform 0.3s ease;
+      border-radius: 3px;
+      box-shadow: 0 0 10px #4da6ffcc;
+      z-index: 5;
+      filter: drop-shadow(0 0 2px #4da6ffaa);
+    }
+
+    .compass-needle::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 16px solid #4da6ff;
+      border-radius: 2px;
+      filter: drop-shadow(0 0 2px #4da6ffbb);
+    }
+
+    .compass-center {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: #4da6ff;
+      border-radius: 50%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      box-shadow: 0 0 15px #4da6ffbb;
+      border: 2px solid #a0d8ff;
+    }
+
+    .compass-heading {
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      color: #a0d8ff;
+      font-weight: 600;
+      text-shadow: 0 0 5px #004080aa;
+      user-select: none;
+      width: 100%;
+      text-align: center;
+    }
+
+    .compass-indicator {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 18px solid #4da6ff;
+      left: 50%;
+      top: 5px;
+      transform: translateX(-50%);
+      z-index: 15;
+      filter: drop-shadow(0 0 3px #4da6ffbb);
+    }
+  </style>
+</head>
+<body>
+  <div class="compass-container">
+    <div class="compass-outer">
+      <div class="compass-indicator"></div>
+      <div class="compass-face" id="compassFace"></div>
+      <div class="compass-center"></div>
+      <div class="compass-needle" id="compassNeedle"></div>
+    </div>
+    <div class="compass-heading">
+      HDG: <span id="headingValue">0</span>°
+    </div>
+  </div>
+
+  <script>
+    function initCompass() {
+      const compassFace = document.getElementById('compassFace');
+      const radius = 110;
+      for (let i = 0; i < 360; i += 10) {
+        const mark = document.createElement('div');
+        mark.className = (i % 30 === 0) ? 'compass-mark major' : 'compass-mark';
+        mark.style.transform = `translateX(-50%) rotate(${i}deg)`;
+        compassFace.appendChild(mark);
+
+        if (i % 30 === 0) {
+          const number = document.createElement('div');
+          number.style.position = 'absolute';
+          number.style.left = (140 + radius * Math.cos((i - 90) * Math.PI / 180)) + 'px';
+          number.style.top = (140 + radius * Math.sin((i - 90) * Math.PI / 180)) + 'px';
+
+          if (i === 0) {
+            number.className = 'compass-letter';
+            number.textContent = 'N';
+          } else if (i === 90) {
+            number.className = 'compass-letter';
+            number.textContent = 'E';
+          } else if (i === 180) {
+            number.className = 'compass-letter';
+            number.textContent = 'S';
+          } else if (i === 270) {
+            number.className = 'compass-letter';
+            number.textContent = 'W';
+          } else {
+            number.className = 'compass-number';
+            number.textContent = i.toString();
+          }
+
+          compassFace.appendChild(number);
+        }
+      }
+    }
+
+    function updateCompass(heading) {
+      while (heading < 0) heading += 360;
+      while (heading >= 360) heading -= 360;
+
+      const compassFace = document.getElementById('compassFace');
+      const compassNeedle = document.getElementById('compassNeedle');
+
+      // Pusula yüzeyini ters yönde döndür (yön göstergesi için)
+      compassFace.style.transform = `rotate(${-heading}deg)`;
+
+      // İğneyi sabit tut (kuzeyi gösterir)
+      compassNeedle.style.transform = `translateX(-50%) translateY(-50%) rotate(0deg)`;
+
+      document.getElementById('headingValue').textContent = Math.round(heading);
+    }
+
+    // Başlangıçta pusulayı oluştur
+    initCompass();
+
+    // Test fonksiyonu (kullanmak istersen açabilirsin)
+    /*
+    let testHeading = 0;
+    setInterval(() => {
+      testHeading = (testHeading + 1) % 360;
+      updateCompass(testHeading);
+    }, 100);
+    */
+
+    // Başlangıç değeri
+    updateCompass(0);
+  </script>
+</body>
+</html>

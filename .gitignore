@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.log
+.env
+venv/
+.idea/
+dist/
+build/
+*.exe
+.venv/
+.idea/
+*.bin
